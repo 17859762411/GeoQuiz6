@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CheatActivity extends AppCompatActivity {
 
@@ -19,12 +20,14 @@ public class CheatActivity extends AppCompatActivity {
             "com.example.a22939.geoquiz6.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN =
             "com.example.a22939.geoquiz6.answer_shown";
+    private static final String EXTRA_CHEAT_CHANCE =
+            "com.example.a22939.geoquiz6.cheat_chance";
 
     private boolean mAnswerIsTrue;
-
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
     private TextView mAndroidApi;
+    private static int mCheatChance = 3;
 
     public static Intent newIntent(Context packageContext, boolean answerIsTrue) {
         Intent intent = new Intent(packageContext, CheatActivity.class);
@@ -41,6 +44,7 @@ public class CheatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
 
+        mCheatChance = getIntent().getIntExtra(EXTRA_CHEAT_CHANCE,3);
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
@@ -51,6 +55,7 @@ public class CheatActivity extends AppCompatActivity {
         mShowAnswerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mCheatChance--;
                 if (mAnswerIsTrue) {
                     mAnswerTextView.setText(R.string.true_button);
                 } else {
@@ -82,6 +87,8 @@ public class CheatActivity extends AppCompatActivity {
     private void setAnswerShownResult(boolean isAnswerShown) {
         Intent data = new Intent();
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
+        data.putExtra(EXTRA_CHEAT_CHANCE,mCheatChance);
         setResult(RESULT_OK, data);
     }
+
 }

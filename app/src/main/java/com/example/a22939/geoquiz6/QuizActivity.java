@@ -15,13 +15,18 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String AVAILABLE_NUMBER = "number";
     private static final int REQUEST_CODE_CHEAT = 0;
+    private static final String EXTRA_CHEAT_CHANCE = "com.example.a22939.geoquiz6.cheat_chance";
 
     private Button mTrueButton;
     private Button mFalseButton;
     private Button mNextButton;
     private Button mCheatButton;
     private TextView mQuestionTextView;
+    private static int mCheatChance = 3;
+    private TextView mCheatChanceTextView;
+
 
     private Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_australia, true),
@@ -72,13 +77,15 @@ public class QuizActivity extends AppCompatActivity {
                 updateQuestion();
             }
         });
-
+        mCheatChanceTextView=(TextView)findViewById(R.id.show_cheat_chance);
         mCheatButton = (Button) findViewById(R.id.cheat_button);
         mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
                 Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                intent.putExtra(EXTRA_CHEAT_CHANCE,mCheatChance);
                 startActivityForResult(intent, REQUEST_CODE_CHEAT);
             }
         });
@@ -97,12 +104,19 @@ public class QuizActivity extends AppCompatActivity {
                 return;
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
+            mCheatChance = data.getIntExtra(EXTRA_CHEAT_CHANCE,0);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        if (mCheatChance == 0){
+            mCheatButton.setEnabled(false);
+            mCheatChanceTextView.setText("no chance "+"times left");
+        }else {
+            mCheatChanceTextView.setText(mCheatChance + "time(s) left");
+        }
         Log.d(TAG, "onStart() called");
     }
 
